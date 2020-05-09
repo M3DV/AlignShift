@@ -1,3 +1,4 @@
+from ..ENVIRON import data_root
 anchor_scales = [4, 6, 8, 12, 24, 48]#, 64
 # fp16 = dict(loss_scale=96.)
 
@@ -128,7 +129,6 @@ test_cfg = dict(
 # dataset settings
 dataset_type = 'DeepLesionDataset_25d'
 
-data_root = '/mnt/data/DeepLesion/'
 img_norm_cfg = dict(
     mean=[0.] * input_channel, std=[1.] * input_channel, to_rgb=False)
 pre_pipeline=[
@@ -174,12 +174,6 @@ test_pipeline = [
     dict(type='Collect', keys=['img', 'gt_bboxes']),
 ]
 data = dict(
-    # train_dataloader=dict(
-    #         imgs_per_gpu=4,
-    #         workers_per_gpu=4,),
-    # val_dataloader=dict(
-    #         imgs_per_gpu=1,
-    #         workers_per_gpu=4,),
     imgs_per_gpu=16,
     workers_per_gpu=4,
     train=dict(
@@ -234,20 +228,4 @@ load_from = None
 resume_from = None
 workflow = [('train', 1)]#, ('val',1)
 GPU = '0,1,2,3'
-description='25d 7cts'
-
-#TODO:adam, dice # 9 slice(太占内存), TSMinplace(还是可以对比试验一下，
-#按distribute的方式应该是不存在的) 优化 fp16看看
-#只取中间那一张再看看，理论上应该这么做, 3D的pooling应该更好，后面试试
-#试试rangdom shift scale
-#achive:
-#adam x
-#feature channel 256 差别不大 有对比过
-#看看shift 到底是哪个波动, 刚开始的时候inplace后结果不一样，但是后来又不一样了。总的来说没啥区别，现在看来的话
-#有条件可以把mask head 调少下，后续按照自己的感觉来搞一个prune版的，应该要不了这么大权重
-#可以直接读取不align的权重来验证2mmspacing以下的对不对哦, 最开始只tsm的权重;确实有问题，我改了spacing
-#后面还要看看是不是我的anchor不够大， 分lesion_size看看指标，理论上也没有太大问题，应为我和其他是一样的。
-#新的align加shift的channel 应该有效果。
-#add checkpoint  改了forward的逻辑， 需要检查
-#7ct 要算3days 暂时放弃
-#1、try soft_nms
+description='25d'

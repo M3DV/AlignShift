@@ -111,7 +111,7 @@ class DeepLesionDatasetAlign(CustomDataset):
 
     def __len__(self):
         return len(self.ann)
-        # return 160
+        # return 160 #for debug
     def clip_to_image(self, bbox, img, remove_empty=True):
         TO_REMOVE = 1
         bbox[:, 0] = bbox[:, 0].clip(min=0, max=img.shape[1] - TO_REMOVE)
@@ -252,19 +252,6 @@ def windowing_rev(im, win):
     return im1
 
 
-# def get_mask(im):
-#     """use a intensity threshold to roughly find the mask of the body"""
-#     th = 32000  # an approximate background intensity value
-#     mask = im > th
-#     mask = binary_opening(mask, structure=np.ones((7, 7)))  # roughly remove bed
-#     # mask = binary_dilation(mask)
-#     # mask = binary_fill_holes(mask, structure=np.ones((11,11)))  # fill parts like lung
-
-#     if mask.sum() == 0:  # maybe atypical intensity
-#         mask = im * 0 + 1
-#     return mask.astype(dtype=np.int32)
-
-     
 
 def get_range(mask, margin=0):
     """Get up, down, left, right extreme coordinates of a binary mask"""
@@ -282,12 +269,3 @@ def map_box_back(boxes, cx=0, cy=0, im_scale=1.):
     boxes[:, [0,2]] += cx
     boxes[:, [1,3]] += cy
     return boxes
-
-def crop_or_pading(img, fixsize):
-    h,w,c = img.shape
-    fh,fw = fixsize
-    mh,mw = max(h, fh),max(w,fw)
-    img_new = np.zeros((mh,mw,c))
-    img_new[(mh-h)//2:(mh+h)//2, (mw-w)//2:(mw+w)//2, :] = img
-
-    return img_new[(mh-fh)//2:(mh+fh)//2, (mw-fw)//2:(mw+fw)//2,:], [(mh-h)//2-(mh-fh)//2, (mw-w)//2-(mw-fw)//2]

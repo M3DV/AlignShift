@@ -18,7 +18,7 @@ class AlignShiftConv(_ConvNd):
                  padding=0, dilation=1, groups=1,
                  bias=True, padding_mode='zeros', 
                  n_fold=8, alignshift=True, inplace=True,
-                 ref_thickness=0.2, shift_padding_zero=True):
+                 ref_thickness=2., shift_padding_zero=False):
 
         kernel_size = _pair_same(kernel_size)
         stride = as_triple(stride)
@@ -33,23 +33,23 @@ class AlignShiftConv(_ConvNd):
         self.ref_thickness = ref_thickness
         self.shift_padding_zero = shift_padding_zero
 
-    def alignshift(self, input, fold, thickness, padding_zero=False):
-        alph = 1 - (self.align_spacing / thickness).view(-1, 1 ,1, 1, 1).clamp_(0., 1.)
+    def alignshift(self, input, fold, thickness, padding_zero=True):
+        alph = 1 - (self.ref_thickness / thickness).view(-1, 1 ,1, 1, 1).clamp_(0., 1.)
         out = torch.zeros_like(input)
         out[:, :fold, :-1] = input[:,  :fold, :-1] * alph +  input[:,  :fold, 1:] * (1-alph)
         out[:, fold: 2 * fold, 1:] = input[:,  fold: 2 * fold, 1:] * alph + \
                                              input[:,  fold: 2 * fold, :-1] * (1-alph)
         out[:, 2 * fold:, :] = input[: , 2 * fold:, :]
-        if not padding_zero:
-            out[:, :fold, -1:] = alph * input[:,  :fold, -1:]
-            out[:, fold:2*fold, :1] = alph * input[:, fold:2*fold, :1]        
+        pad_alph = alph if padding_zero else 1.0
+        out[:, :fold, -1:] = pad_alph * input[:,  :fold, -1:]
+        out[:, fold:2*fold, :1] = pad_alph * input[:, fold:2*fold, :1]        
         return out
 
     def align_shift(self, x, fold, ref_thickness, thickness, padding_zero, inplace):
         if inplace:
             x = inplace_alignshift(x, fold, ref_thickness, thickness, padding_zero)
         else:
-            x = self.alignshift(x, fold, thickness)
+            x = self.alignshift(x, fold, thickness, padding_zero)
         return x
 
     def forward(self, input, thickness=None):
@@ -85,8 +85,10 @@ class InplaceAlignShift(torch.autograd.Function):
         input.data[:, fold:2*fold, 1:] = input.data[:, fold:2*fold, 1:] * alph + \
                                                                 input.data[:, fold:2*fold, :-1] * (1-alph)
         if padding_zero:
-            input.data[:, :fold, -1:] =  alph * input.data[:, :fold, -1:]
-            input.data[:, fold:2*fold, :1] = alph * input.data[:, fold:2*fold, :1]
+            input.data[:, :fold, -1:] =  input.data[:, :fold, -1:] * alph
+            input.data[:, fold:2*fold, :1] = input.data[:, fold:2*fold, :1] * alph
+            # input.data[:, :fold, -1:] =  input.data[:, :fold, -1:] * 0.6
+            # input.data[:, fold:2*fold, :1] = input.data[:, fold:2*fold, :1] * 0.6
         return input
 
     @staticmethod
@@ -109,5 +111,4 @@ class InplaceAlignShift(torch.autograd.Function):
         return grad_output, None, None, None, None
 
 inplace_alignshift = InplaceAlignShift.apply
-# naive_tsm = NaiveTSM.apply
-# naive_alignshift = NaiveAlignShift.apply
+

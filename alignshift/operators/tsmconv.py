@@ -60,18 +60,15 @@ class TSMConv(_ConvNd):
 
 
 class InplaceTSM(torch.autograd.Function):
-    # Special thanks to @raoyongming for the help to this function
     @staticmethod
     def forward(ctx, input, fold):
         '''
         @params: 
             input: BxCxDxHxW
-          n_div: xx
+            fold: chennels of shift part
         '''
         # not support higher order gradient
-        # input.detach_()
         n, c, t, h, w = input.size()
-        # fold = c//n_div
         ctx.fold_ = fold
         buffer = input.data.new(n, fold, t, h, w).zero_()
         buffer[:, :, :-1] = input.data[:, :fold, 1:]
@@ -83,7 +80,6 @@ class InplaceTSM(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, grad_output):
-        # grad_output.detach_()
         fold = ctx.fold_
         n, c, t, h, w = grad_output.size()
         buffer = grad_output.data.new(n, fold, t, h, w).zero_()

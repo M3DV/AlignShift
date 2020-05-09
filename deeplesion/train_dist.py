@@ -2,8 +2,7 @@
 from __future__ import division
 import argparse
 import sys
-print(sys.path)
-sys.path.append('/mnt/dev/alignconv/')
+sys.path.append('/mnt/data3/alignconv/')
 import os
 import torch
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -15,12 +14,6 @@ from mmdet.apis import (get_root_logger, init_dist, set_random_seed,
 from mmdet.datasets import build_dataset
 from mmdet.models import build_detector
 from collections import OrderedDict
-
-def convert_state_dict_from_2d(state_dict):
-    state_dict_3d = OrderedDict()
-    for name, value in state_dict:
-        pass
-    return state_dict_3d
 
 
 def parse_args():

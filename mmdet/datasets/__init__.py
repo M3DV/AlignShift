@@ -9,9 +9,9 @@ from .voc import VOCDataset
 from .wider_face import WIDERFaceDataset
 from .xml_style import XMLDataset
 
-from experiments.dataset.DeepLesionDataset_tsm import DeepLesionDatasetTSM
-from experiments.dataset.DeepLesionDataset_align import DeepLesionDatasetAlign
-from experiments.dataset.DeepLesion_25d import DeepLesionDataset25d
+from deeplesion.dataset.DeepLesionDataset_tsm import DeepLesionDatasetTSM
+from deeplesion.dataset.DeepLesionDataset_align import DeepLesionDatasetAlign
+from deeplesion.dataset.DeepLesion_25d import DeepLesionDataset25d
 __all__ = [
     'CustomDataset', 'XMLDataset', 'CocoDataset', 'VOCDataset',
     'CityscapesDataset', 'GroupSampler', 'DistributedGroupSampler',

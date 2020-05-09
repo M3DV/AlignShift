@@ -1,35 +1,34 @@
+from deeplesion.ENVIRON import data_root
 anchor_scales = [4, 6, 8, 12, 24, 48]#, 64
 # fp16 = dict(loss_scale=96.)
 
 dataset_transform = dict(
     IMG_DO_CLIP = False,
-    # PIXEL_MEAN = 0.5,
     WINDOWING = [-1024, 2050],
     DATA_AUG_POSITION = False,
     NORM_SPACING = 0.,
     SLICE_INTV = 2.0,
-    NUM_SLICES = 3,
+    NUM_SLICES = 7,
     GROUNP_ZSAPACING = False,
 )
 input_channel = dataset_transform['NUM_SLICES']
 feature_channel = 512
 # model settings
-weights2d_path = None,
 model = dict(
-    type='MaskRCNN',
+    type='AlignShiftMaskRCNN',
     pretrained= False,
     backbone=dict(
-        type='DenseNetCustomTrunc3dTSM',
+        type='DenseNetCustomTrunc3dAlign',
         n_cts=input_channel,
         out_dim=feature_channel,
         fpn_finest_layer=2,
+        ref_thickness=2.0,
         n_fold=8,
-        memory_efficient=True,
-        syncbn=False),
+        memory_efficient=True),
     rpn_head=dict(
         type='RPNHead',
         in_channels=feature_channel,
-        feat_channels=feature_channel,###原版这俩好像没有conv
+        feat_channels=feature_channel,
         anchor_scales=anchor_scales,
         anchor_ratios=[0.5, 1., 2.0],
         anchor_base_sizes=[4],
@@ -125,14 +124,13 @@ test_cfg = dict(
         nms_thr=0.7,
         min_bbox_size=0),
     rcnn=dict(
-        score_thr=0.00005,
+        score_thr=0.001,
         nms=dict(type='nms', iou_thr=0.5),
         max_per_img=50,
         mask_thr_binary=0.5))
 # dataset settings
-dataset_type = 'DeepLesionDatasetTSM'
+dataset_type = 'DeepLesionDatasetAlign'
 
-data_root = '/mnt/data/DeepLesion/'
 img_norm_cfg = dict(
     mean=[0.] * input_channel, std=[1.] * input_channel, to_rgb=False)
 pre_pipeline=[
@@ -170,7 +168,7 @@ pre_pipeline_test=[
 ]
 train_pipeline = [
     dict(type='DefaultFormatBundle_3d'),
-    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks']),#, 'flage'#, 'img_info'#, 'z_spacing', , 'thickness'
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks', 'thickness']),#, 'flage'#, 'img_info'#, 'thickness'
 ]
 
 test_pipeline = [
@@ -178,12 +176,6 @@ test_pipeline = [
     dict(type='Collect', keys=['img', 'gt_bboxes']),
 ]
 data = dict(
-    # train_dataloader=dict(
-    #         imgs_per_gpu=4,
-    #         workers_per_gpu=4,),
-    # val_dataloader=dict(
-    #         imgs_per_gpu=1,
-    #         workers_per_gpu=4,),
     imgs_per_gpu=2,
     workers_per_gpu=0,
     train=dict(
@@ -195,14 +187,14 @@ data = dict(
         dicm2png_cfg=dataset_transform),
         with_mask=True,
         with_label=True,
-    test=dict(
+    val=dict(
         type=dataset_type,
         ann_file=data_root + 'val_ann.pkl',
         image_path=data_root + 'Images_png/',
         pipeline=train_pipeline,
         pre_pipeline = pre_pipeline_test,
         dicm2png_cfg=dataset_transform),
-    val=dict(
+    test=dict(
         type=dataset_type,
         ann_file=data_root + 'test_ann.pkl',
         image_path=data_root + 'Images_png/',
@@ -233,10 +225,9 @@ log_config = dict(
 total_epochs = 20#16
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = f'./work_dirs/densenet_3d_tsm_r1'
+work_dir = f'./work_dirs/densenet_3d_alignshift_r3'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]#, ('val',1)
-GPU = '0,1'
-description='tsm '
-
+GPU = '0,1,2,3'
+description='align no padding zero'

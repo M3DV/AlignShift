@@ -6,7 +6,7 @@ from .test_aug import MultiScaleFlipAug
 from .transforms import (Albu, Expand, MinIoURandomCrop, Normalize, Pad,
                          PhotoMetricDistortion, RandomCrop, RandomFlip, Resize,
                          SegResizeFlipPadRescale)
-from experiments.dataset.transform import ImageToTensor_3d, DefaultFormatBundle_3d
+from deeplesion.dataset.transform import ImageToTensor_3d, DefaultFormatBundle_3d
 
 __all__ = [
     'Compose', 'to_tensor', 'ToTensor', 'ImageToTensor', 'ToDataContainer',

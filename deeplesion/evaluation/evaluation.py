@@ -1,5 +1,5 @@
 from mmdet.core.evaluation.eval_hooks import DistEvalHook
-from experiments.evaluation.evaluation_metrics import sens_at_FP
+from deeplesion.evaluation.evaluation_metrics import sens_at_FP
 import numpy as np
 import torch.distributed as dist
 from mmcv.parallel import collate, scatter
@@ -10,42 +10,6 @@ import mmcv
 import torch
 import os
 import os.path as osp
-
-
-class DeepLesionEval(DistEvalHook):
-
-    def evaluate(self, runner, results):
-        gt_bboxes = []
-        gt_labels = []
-        pred_bboxes = []
-        s1_box=[]
-        s1_gt=[]
-        s5_box=[]
-        s5_gt=[]
-        for i in range(len(self.dataset)):
-            print(results[i])
-            pred_bboxes.append(np.vstack(results[i][0]))
-            gt_bboxes.append(self.dataset[i]['gt_bboxes'].data)
-            if results[i]['thickness'].data[0]<=2.:
-                s1_box.append(pred_bboxes[-1])
-                s1_gt.append(gt_bboxes[-1])
-            if results[i]['thickness'].data[0]==5.:
-                s5_box.append(pred_bboxes[-1])
-                s5_gt.append(gt_bboxes[-1]) 
-                
-        avgFP=[0.5, 1, 2, 4, 8, 16]
-        iou_th_astrue=0.5
-        # try:
-        r = sens_at_FP(pred_bboxes, gt_bboxes, avgFP, iou_th_astrue)
-        r1 = sens_at_FP(s1_box, s1_gt, avgFP, iou_th_astrue)
-        r2 = sens_at_FP(s5_box, s5_gt, avgFP, iou_th_astrue)
-        # except Exception as e:
-        #     print('froc crash!\n',e)
-        #     return
-        runner.logger.info(f"{r}")
-        with open('./logs/log_all_metrics.txt','a') as f:
-            f.writelines(f"{runner.epoch}:{r}:\t{runner.work_dir.split('/')[-1]}\t{runner.cfg.description}\t{r1}\t{r2}\n")
-
 
 
 class MyDeepLesionEval(Hook):

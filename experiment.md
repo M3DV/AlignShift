@@ -16,7 +16,7 @@ AlignShift:Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([arX
   * ``operators``: include AlignShiftConv, TSMConv.
   * ``converters``: include converters which convert 2D models to 3dConv/AlignShiftConv/TSMConv counterparts.
   * ``models``: Native AlignShift/TSM models. 
-* ``experiments`` 
+* ``deeplesion`` 
   the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
 ,this directory consists of compounents used in mmdetection.
 
@@ -72,17 +72,35 @@ output_3d = net(input_3d, thickness)
 
 ## How to run the experiments
 
+* Dataset
+
+  Before training, mask should be generated from bounding box and recists. [mask generation](./deeplesion/dataset/generate_mask_with_grabcut.md)
+
+* prepare mmdetection script
+
+  Specify input ct slices in [./deeplesion/mconfigs/densenet_align.py](./deeplesion/mconfigs/densenet_align.py) through modifing NUM_SLICES in dict dataset_transform
+  
+  Specify data root in [./deeplesion/ENVIRON.py](./deeplesion/ENVIRON.py)
+  
+
 * Training
   ```bash
-  ./experiments/dist_train.sh ${mmdetection script} ${dist training GPUS}
+  ./deeplesion/train_dist.sh ${mmdetection script} ${dist training GPUS}
   ```
 
   * Train AlignShiftConv models 
   ```bash
-  ./experiments/dist_train.sh ./experiments/mconfig/densenet_align.py 2
+  ./deeplesion/train_dist.sh ./deeplesion/mconfig/densenet_align.py 2
   ```
 
   * Train TSMConv models 
   ```bash
-  ./experiments/dist_train.sh ./experiments/mconfig/densenet_tsm.py 2
+  ./deeplesion/train_dist.sh ./deeplesion/mconfig/densenet_tsm.py 2
   ```
+ * evaluation 
+   ```bash
+   ./deeplesion/eval.sh ${mmdetection script} ${checkpoint path}
+      ```
+   ```bash
+   ./deeplesion/eval.sh ./deeplesion/mconfig/densenet_align.py ./deeplesion/model_weights/alignshift_7slice.pth
+   ```

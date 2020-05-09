@@ -12,7 +12,7 @@ from mmdet.core import (CocoDistEvalmAPHook, CocoDistEvalRecallHook,
 from mmdet.datasets import DATASETS, build_dataloader
 from mmdet.models import RPN
 from .env import get_root_logger
-from experiments.evaluation.evaluation import DeepLesionEval, MyDeepLesionEval
+from deeplesion.evaluation.evaluation import MyDeepLesionEval
 
 def parse_losses(losses):
     log_vars = OrderedDict()

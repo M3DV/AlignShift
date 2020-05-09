@@ -1,3 +1,4 @@
+from deeplesion.ENVIRON import data_root
 anchor_scales = [4, 6, 8, 12, 24, 48]#, 64
 # fp16 = dict(loss_scale=96.)
 
@@ -8,7 +9,7 @@ dataset_transform = dict(
     DATA_AUG_POSITION = False,
     NORM_SPACING = 0.,
     SLICE_INTV = 2.0,
-    NUM_SLICES = 7,
+    NUM_SLICES = 3,
     GROUNP_ZSAPACING = False,
 )
 input_channel = dataset_transform['NUM_SLICES']
@@ -19,11 +20,12 @@ model = dict(
     type='MaskRCNN',
     pretrained= False,
     backbone=dict(
-        type='DenseNetCustomTrunc3d_acsconv',
+        type='DenseNetCustomTrunc3dTSM',
         n_cts=input_channel,
         out_dim=feature_channel,
         fpn_finest_layer=2,
-        memory_efficient=1,
+        n_fold=8,
+        memory_efficient=True,
         syncbn=False),
     rpn_head=dict(
         type='RPNHead',
@@ -46,8 +48,8 @@ model = dict(
     bbox_head=dict(
         type='SharedFCBBoxHead',
         num_fcs=2,
-        in_channels=512,
-        fc_out_channels=2048,
+        in_channels=feature_channel,
+        fc_out_channels=feature_channel * 4,
         roi_feat_size=7,
         num_classes=2,
         num_shared_convs=0,
@@ -124,14 +126,13 @@ test_cfg = dict(
         nms_thr=0.7,
         min_bbox_size=0),
     rcnn=dict(
-        score_thr=0.005,
+        score_thr=0.00005,
         nms=dict(type='nms', iou_thr=0.5),
         max_per_img=50,
         mask_thr_binary=0.5))
 # dataset settings
-dataset_type = 'DeepLesionDataset_tsm'
+dataset_type = 'DeepLesionDatasetTSM'
 
-data_root = '/mnt/data3/deeplesion/dataset/'
 img_norm_cfg = dict(
     mean=[0.] * input_channel, std=[1.] * input_channel, to_rgb=False)
 pre_pipeline=[
@@ -169,7 +170,7 @@ pre_pipeline_test=[
 ]
 train_pipeline = [
     dict(type='DefaultFormatBundle_3d'),
-    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks', ]),#, 'flage'#, 'img_info'#, 'z_spacing'
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks']),#, 'flage'#, 'img_info'#, 'z_spacing', , 'thickness'
 ]
 
 test_pipeline = [
@@ -177,12 +178,7 @@ test_pipeline = [
     dict(type='Collect', keys=['img', 'gt_bboxes']),
 ]
 data = dict(
-    # train_dataloader=dict(
-    #         imgs_per_gpu=4,
-    #         workers_per_gpu=4,),
-    # val_dataloader=dict(
-    #         imgs_per_gpu=1,
-    #         workers_per_gpu=4,),
+
     imgs_per_gpu=2,
     workers_per_gpu=0,
     train=dict(
@@ -232,11 +228,10 @@ log_config = dict(
 total_epochs = 20#16
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = f'./work_dirs/densenet_3d_acs_r1'
+work_dir = f'./work_dirs/densenet_3d_tsm_r1'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]#, ('val',1)
 GPU = '0,1,2,3'
-description='acsconv'
+description='tsm'
 
-#TODO:之前dataloader没有选对
