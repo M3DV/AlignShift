@@ -1,6 +1,4 @@
 # Ke Yan, Imaging Biomarkers and Computer-Aided Diagnosis Laboratory,
-# National Institutes of Health Clinical Center, July 2019
-"""The truncated Densenet-121 with FPN and 3DCE"""
 from collections import namedtuple
 
 import torch
@@ -95,9 +93,6 @@ class _Reduction_z(nn.Sequential):
 
 @BACKBONES.register_module
 class DenseNetCustomTrunc3dTSM(nn.Module):
-    """The truncated Densenet-121 with FPN and 3DCE"""
-    # truncated since transition layer 3 since we find it works better in DeepLesion
-    # We only keep the finest-level feature map after FPN
     def __init__(self, 
                 out_dim=256,
                 n_cts=3,

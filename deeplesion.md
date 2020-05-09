@@ -11,21 +11,21 @@ AlignShift:Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([arX
 
 ## Code structure
 
-* ``convs``
+* ``alignshift``
   the core implementation of AlignShift convolution and TSM convolution, including the operators, models, and 2D-to-3D/AlignShift/TSM model converters. 
   * ``operators``: include AlignShiftConv, TSMConv.
-  * ``converters``: include converters which convert 2D models to 3dConv/AlignShiftConv/TSMConv counterparts.
+  * ``converters.py``: include converters which convert 2D models to 3dConv/AlignShiftConv/TSMConv counterparts.
   * ``models``: Native AlignShift/TSM models. 
 * ``deeplesion`` 
   the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
 ,this directory consists of compounents used in mmdetection.
-
+* ``mmdet`` 
 ## Convert a 2D model into 3D with a single line of code
 
 ```python
-import Converter
+from converter import Converter
 import torchvision
-from convs import AlignShiftConv
+from alignshift import AlignShiftConv
 # m is a standard pytorch model
 m = torchvision.models.resnet18(True)
 alignshift_conv_cfg = dict(conv_type=AlignShiftConv, 
@@ -48,7 +48,7 @@ out = m(x, thickness)
 ## Usage of AlignShiftConv/TSMConv operators
 
 ```python
-from convs.operators import AlignShiftConv, TSMConv
+from alignshift.operators import AlignShiftConv, TSMConv
 x = torch.rand(batch_size, 3, D, H, W)
 thickness = torch.rand(batch_size, 1)
 # AlignShiftConv to process 3D volumnes
@@ -62,7 +62,7 @@ out = conv(x)
 ## Usage of native  AlignShiftConv/TSMConv models
 
 ```python
-from convs.models import DenseNetCustomTrunc3dAlign, DenseNetCustomTrunc3dTSM
+from alignshift.models import DenseNetCustomTrunc3dAlign, DenseNetCustomTrunc3dTSM
 net = DenseNetCustomTrunc3dAlign(num_classes=3)
 B, C_in, D, H, W = (1, 3, 7, 256, 256)
 input_3d = torch.rand(B, C_in, D, H, W)
