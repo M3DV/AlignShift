@@ -1,8 +1,12 @@
 # AlignShift
 
-AlignShift: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([arXiv](https://arxiv.org/abs/2005.01969))
+*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([arXiv:2005.01969](https://arxiv.org/abs/2005.01969))
 
+## Key contributions
 
+* *AlignShift* aims at a **plug-and-play replacement** of standard 3D convolution for 3D medical images, which enables 2D-to-3D pretraining as [ACS Convolutions](https://github.com/M3DV/ACSConv/). It converts theoretically any 2D pretrained network into thickness-aware 3D network. 
+* *AlignShift*  bridges the performance gap between thin- and thick-slice volumes by a unified framework. Remarkably, the *AlignShift*-converted networks behave like 3D for the thin-slice, nevertheless degenerate to 2D for the thick-slice adaptively.
+* Without whistles and bells, we outperform previous state of the art by considerable margins on large-scale DeepLesion benchmark for universal lesion detection.
 
 ## Code structure
 
@@ -99,3 +103,8 @@ output_3d = net(input_3d, thickness)
    ```bash
    ./deeplesion/eval.sh ./deeplesion/mconfig/densenet_align.py ./deeplesion/model_weights/alignshift_7slice.pth
    ```
+
+**[WIP] More code is coming soon, stay tuned!**
+
+* [ ] Model Snapshot
+* [ ] More document
