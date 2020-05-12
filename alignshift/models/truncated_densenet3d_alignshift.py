@@ -1,6 +1,4 @@
 # Ke Yan, Imaging Biomarkers and Computer-Aided Diagnosis Laboratory,
-# National Institutes of Health Clinical Center, July 2019
-"""The truncated Densenet-121 with FPN and 3DCE"""
 from collections import namedtuple
 
 import torch
@@ -13,7 +11,7 @@ import torch.utils.model_zoo as model_zoo
 import re
 from collections import OrderedDict
 from mmdet.models.registry import BACKBONES
-from convs.operators import AlignShiftConv
+from alignshift.operators import AlignShiftConv
 import torch.utils.checkpoint as cp
 from mmdet.models.utils import build_conv_layer, build_norm_layer
 # mybn = nn.BatchNorm3d
@@ -30,13 +28,13 @@ class _DenseLayer(nn.Sequential):
     def __init__(self, num_input_features, growth_rate, bn_size, drop_rate, n_fold, memory_efficient=False, ref_thickness=None):
         super(_DenseLayer, self).__init__()
         self.add_module('norm1', build_norm_layer(norm_cfg, num_input_features, postfix=1)[1]),
-        self.add_module('relu1', nn.ReLU(inplace=True)),
+        self.add_module('relu1', nn.ReLU(inplace=False)),
         self.add_module('conv1', AlignShiftConv(num_input_features, bn_size *
                                            growth_rate, kernel_size=1, stride=1, alignshift=True,
                                            bias=False, ref_thickness=ref_thickness, n_fold=n_fold,)),
         self.add_module('norm2', build_norm_layer(norm_cfg, bn_size * growth_rate, postfix=1)[1]),
-        self.add_module('relu2', nn.ReLU(inplace=True)),
-        self.add_module('conv2', AlignShiftConv(bn_size * growth_rate, growth_rate,
+        self.add_module('relu2', nn.ReLU(inplace=False)),
+        self.add_module('conv2', AlignShiftConv(bn_size * growth_rate, growth_rate, alignshift=True,
                                            kernel_size=3, stride=1, padding=1,
                                            bias=False, ref_thickness=ref_thickness, n_fold=n_fold)),
         self.drop_rate = drop_rate
@@ -77,11 +75,6 @@ class _DenseBlock(nn.Module):
             features.append(new_features)
         return torch.cat(features, 1)
 
-class _StageNormRelu(nn.Sequential):
-    def __init__(self, num_input_features):
-        super().__init__()
-        self.add_module('norm', build_norm_layer(norm_cfg, num_input_features, postfix=1)[1])
-        self.add_module('relu', nn.ReLU(inplace=True))
 
 class _Transition(nn.Sequential):
     def __init__(self, num_input_features, num_output_features):
@@ -101,17 +94,13 @@ class _Reduction_z(nn.Sequential):
         # self.add_module('reduction_z_pooling', nn.AvgPool3d(kernel_size=[input_slice, 1, 1], stride=1))
 @BACKBONES.register_module
 class DenseNetCustomTrunc3dAlign(nn.Module):
-    """The truncated Densenet-121 with FPN and 3DCE"""
-    # truncated since transition layer 3 since we find it works better in DeepLesion
-    # We only keep the finest-level feature map after FPN
     def __init__(self, 
                 out_dim=256,
                 n_cts=3,
                 fpn_finest_layer=1,
                 ref_thickness=2.0,
                 n_fold=8, 
-                memory_efficient=True,
-                syncbn=True):
+                memory_efficient=True):
         super().__init__()
         self.depth = 121
         self.feature_upsample = True
@@ -176,8 +165,8 @@ class DenseNetCustomTrunc3dAlign(nn.Module):
                 nn.init.kaiming_uniform_(layer.weight, a=1)
                 nn.init.constant_(layer.bias, 0)
         self.init_weights()
-        if syncbn:
-            self = nn.SyncBatchNorm.convert_sync_batchnorm(self)
+        # if syncbn:
+        #     self = nn.SyncBatchNorm.convert_sync_batchnorm(self)
 
     def forward(self, x, thickness):
         x = self.conv0(x)
@@ -238,8 +227,8 @@ class DenseNetCustomTrunc3dAlign(nn.Module):
                 state_dict1[new_key] = state_dict[key]
 
         key = self.load_state_dict(state_dict1, strict=False)
-        print(key)
-
+        #print(key)
+        
     def freeze(self):
         for name, param in self.named_parameters():
             print('freezing', name)

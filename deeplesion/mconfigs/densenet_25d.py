@@ -1,4 +1,4 @@
-from ..ENVIRON import data_root
+from deeplesion.ENVIRON import data_root
 anchor_scales = [4, 6, 8, 12, 24, 48]#, 64
 # fp16 = dict(loss_scale=96.)
 
@@ -9,7 +9,7 @@ dataset_transform = dict(
     DATA_AUG_POSITION = False,
     NORM_SPACING = 0.,
     SLICE_INTV = 2.0,
-    NUM_SLICES = 7,
+    NUM_SLICES = 3,
     GROUNP_ZSAPACING = False,
 )
 input_channel = dataset_transform['NUM_SLICES']
@@ -21,6 +21,7 @@ model = dict(
     pretrained= False,
     backbone=dict(
         type='DenseNetCustomTrunc',
+        in_channels=input_channel,
         out_dim=512,
         fpn_finest_layer=2,),
     rpn_head=dict(
@@ -127,7 +128,7 @@ test_cfg = dict(
         max_per_img=50,
         mask_thr_binary=0.5))
 # dataset settings
-dataset_type = 'DeepLesionDataset_25d'
+dataset_type = 'DeepLesionDataset25d'
 
 img_norm_cfg = dict(
     mean=[0.] * input_channel, std=[1.] * input_channel, to_rgb=False)
@@ -166,7 +167,7 @@ pre_pipeline_test=[
 ]
 train_pipeline = [
     dict(type='DefaultFormatBundle'),
-    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks', 'z_spacing']),#, 'flage'#, 'img_info'#, 'z_spacing'
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks', 'thickness']),#, 'flage'#, 'img_info'#, 'z_spacing'
 ]
 
 test_pipeline = [
@@ -185,14 +186,14 @@ data = dict(
         dicm2png_cfg=dataset_transform),
         with_mask=True,
         with_label=True,
-    test=dict(
+    val=dict(
         type=dataset_type,
         ann_file=data_root + 'val_ann.pkl',
         image_path=data_root + 'Images_png/',
         pipeline=train_pipeline,
         pre_pipeline = pre_pipeline_test,
         dicm2png_cfg=dataset_transform),
-    val=dict(
+    test=dict(
         type=dataset_type,
         ann_file=data_root + 'test_ann.pkl',
         image_path=data_root + 'Images_png/',

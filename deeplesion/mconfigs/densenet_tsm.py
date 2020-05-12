@@ -9,7 +9,7 @@ dataset_transform = dict(
     DATA_AUG_POSITION = False,
     NORM_SPACING = 0.,
     SLICE_INTV = 2.0,
-    NUM_SLICES = 3,
+    NUM_SLICES = 7,
     GROUNP_ZSAPACING = False,
 )
 input_channel = dataset_transform['NUM_SLICES']
@@ -25,12 +25,11 @@ model = dict(
         out_dim=feature_channel,
         fpn_finest_layer=2,
         n_fold=8,
-        memory_efficient=True,
-        syncbn=False),
+        memory_efficient=True),
     rpn_head=dict(
         type='RPNHead',
         in_channels=feature_channel,
-        feat_channels=feature_channel,###原版这俩好像没有conv
+        feat_channels=feature_channel,
         anchor_scales=anchor_scales,
         anchor_ratios=[0.5, 1., 2.0],
         anchor_base_sizes=[4],
@@ -63,7 +62,7 @@ model = dict(
     mask_roi_extractor=dict(
         type='SingleRoIExtractor',
         roi_layer=dict(type='RoIAlign', out_size=14, sample_num=2),
-        finest_scale=196, #按照面积是这个的倍数， 到该层去取feature
+        finest_scale=196, 
         out_channels=feature_channel,
         featmap_strides=[4]),
     mask_head=dict(
@@ -170,7 +169,7 @@ pre_pipeline_test=[
 ]
 train_pipeline = [
     dict(type='DefaultFormatBundle_3d'),
-    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks']),#, 'flage'#, 'img_info'#, 'z_spacing', , 'thickness'
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks', 'thickness']),#, 'flage'#, 'img_info'#, 'z_spacing', , 'thickness'
 ]
 
 test_pipeline = [
@@ -190,14 +189,14 @@ data = dict(
         dicm2png_cfg=dataset_transform),
         with_mask=True,
         with_label=True,
-    test=dict(
+    val=dict(
         type=dataset_type,
         ann_file=data_root + 'val_ann.pkl',
         image_path=data_root + 'Images_png/',
         pipeline=train_pipeline,
         pre_pipeline = pre_pipeline_test,
         dicm2png_cfg=dataset_transform),
-    val=dict(
+    test=dict(
         type=dataset_type,
         ann_file=data_root + 'test_ann.pkl',
         image_path=data_root + 'Images_png/',

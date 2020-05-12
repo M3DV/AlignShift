@@ -11,7 +11,7 @@ from .xml_style import XMLDataset
 
 from deeplesion.dataset.DeepLesionDataset_tsm import DeepLesionDatasetTSM
 from deeplesion.dataset.DeepLesionDataset_align import DeepLesionDatasetAlign
-from deeplesion.dataset.DeepLesion_25d import DeepLesionDataset25d
+from deeplesion.dataset.DeepLesionDataset_25d import DeepLesionDataset25d
 __all__ = [
     'CustomDataset', 'XMLDataset', 'CocoDataset', 'VOCDataset',
     'CityscapesDataset', 'GroupSampler', 'DistributedGroupSampler',

@@ -16,13 +16,14 @@ from mmdet.models.registry import BACKBONES
 class DenseNetCustomTrunc(nn.Module):
     def __init__(self, 
                 out_dim=256,
+                in_channels=3,
                 fpn_finest_layer=1):
         super().__init__()
         self.depth = 121
         self.feature_upsample = True
         self.fpn_finest_layer = fpn_finest_layer
         self.out_dim = out_dim
-        self.in_channel = 7
+        self.in_channel = in_channels
         assert self.depth in [121]
         if self.depth == 121:
             num_init_features = 64

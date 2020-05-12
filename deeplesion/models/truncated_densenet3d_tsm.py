@@ -1,6 +1,4 @@
 # Ke Yan, Imaging Biomarkers and Computer-Aided Diagnosis Laboratory,
-# National Institutes of Health Clinical Center, July 2019
-"""The truncated Densenet-121 with FPN and 3DCE"""
 from collections import namedtuple
 
 import torch
@@ -31,12 +29,12 @@ class _DenseLayer(nn.Sequential):
     def __init__(self, num_input_features, growth_rate, bn_size, drop_rate, n_fold, memory_efficient=False):
         super(_DenseLayer, self).__init__()
         self.add_module('norm1', build_norm_layer(norm_cfg, num_input_features, postfix=1)[1]),
-        self.add_module('relu1', nn.ReLU(inplace=True)),
+        self.add_module('relu1', nn.ReLU(inplace=False)),
         self.add_module('conv1', TSMConv(num_input_features, bn_size *
                                            growth_rate, kernel_size=1, stride=1,
                                            bias=False, n_fold=n_fold)),
         self.add_module('norm2', build_norm_layer(norm_cfg, bn_size * growth_rate, postfix=1)[1]),
-        self.add_module('relu2', nn.ReLU(inplace=True)),
+        self.add_module('relu2', nn.ReLU(inplace=False)),
         self.add_module('conv2', TSMConv(bn_size * growth_rate, growth_rate,
                                            kernel_size=3, stride=1, padding=1,
                                            bias=False, n_fold=n_fold)),
@@ -85,7 +83,7 @@ class _Transition(nn.Sequential):
         self.add_module('relu', nn.ReLU(inplace=True))
         self.add_module('conv', TSMConv(num_input_features, num_output_features,
                                           kernel_size=1, stride=1, bias=False, tsm=False))
-        self.add_module('pool', nn.AvgPool3d(kernel_size=[1, 3, 3], stride=[1, 2, 2], padding=[0,1,1]))
+        self.add_module('pool', nn.AvgPool3d(kernel_size=[1, 2, 2], stride=[1, 2, 2]))#, padding=[0,1,1]
 
 class _Reduction_z(nn.Sequential):
     def __init__(self, input_features, input_slice):
@@ -95,16 +93,12 @@ class _Reduction_z(nn.Sequential):
 
 @BACKBONES.register_module
 class DenseNetCustomTrunc3dTSM(nn.Module):
-    """The truncated Densenet-121 with FPN and 3DCE"""
-    # truncated since transition layer 3 since we find it works better in DeepLesion
-    # We only keep the finest-level feature map after FPN
     def __init__(self, 
                 out_dim=256,
                 n_cts=3,
                 fpn_finest_layer=1,
                 memory_efficient=True,
-                n_fold=8,
-                syncbn=True):
+                n_fold=8,):
         super().__init__()
         self.depth = 121
         self.feature_upsample = True
@@ -131,16 +125,17 @@ class DenseNetCustomTrunc3dTSM(nn.Module):
         # Each denseblock
         num_features = num_init_features
         for i, num_layers in enumerate(block_config):
-            block = _DenseBlock(num_layers=num_layers, num_input_features=num_features,memory_efficient=memory_efficient,
-                                bn_size=bn_size, growth_rate=growth_rate, drop_rate=drop_rate, n_fold=n_fold)
+            block = _DenseBlock(num_layers=num_layers, num_input_features=num_features,
+                                bn_size=bn_size, growth_rate=growth_rate, drop_rate=drop_rate,
+                                n_fold=self.n_fold, memory_efficient=memory_efficient)
             self.add_module('denseblock%d' % (i + 1), block)
             num_features = num_features + num_layers * growth_rate
+            reductionz = _Reduction_z(num_features, self.n_cts)
+            self.add_module('reductionz%d' % (i + 1), reductionz)
             if i != len(block_config) - 1:
                 trans = _Transition(num_input_features=num_features, num_output_features=num_features // 2)
                 self.add_module('transition%d' % (i + 1), trans)
                 num_features = num_features // 2
-            reductionz = _Reduction_z(num_features, self.n_cts)
-            self.add_module('reductionz%d' % (i + 1), reductionz)
 
         # Final batch norm
         # self.add_module('norm5', nn.BatchNorm2d(num_features))
@@ -164,38 +159,40 @@ class DenseNetCustomTrunc3dTSM(nn.Module):
                 nn.init.kaiming_uniform_(layer.weight, a=1)
                 nn.init.constant_(layer.bias, 0)
         self.init_weights()
-        if syncbn:
-            self = nn.SyncBatchNorm.convert_sync_batchnorm(self)
+        # if syncbn:
+        #     self = nn.SyncBatchNorm.convert_sync_batchnorm(self)
 
     def forward(self, x):
         x = self.conv0(x)
         x = self.norm0(x)
-        relu0 = self.relu0(x)
-        pool0 = self.pool0(relu0)
+        x = self.relu0(x)
+        x = self.pool0(x)
 
-        db1 = self.denseblock1(pool0)
-        ts1 = self.transition1(db1)
+        x = self.denseblock1(x)
+        redc1 = self.reductionz1(x)
+        x = self.transition1(x)
 
-        db2 = self.denseblock2(ts1)
-        ts2 = self.transition2(db2)
 
-        db3 = self.denseblock3(ts2)
+        x = self.denseblock2(x)
+        redc2 = self.reductionz2(x)
+        x = self.transition2(x)
 
+
+        x = self.denseblock3(x)
+        redc3 = self.reductionz3(x)
         # truncated since here since we find it works better in DeepLesion
         # ts3 = self.transition3(db3)
         # db4 = self.denseblock4(ts3)
 
-        if self.feature_upsample:
-            ftmaps = [relu0[:,:,self.mid_ct,...], db1[:,:,self.mid_ct,...], db2[:,:,self.mid_ct,...], db3[:,:,self.mid_ct,...]]
-            x = self.lateral4(ftmaps[-1])
-            for p in range(3, self.fpn_finest_layer - 1, -1):
-                x = F.interpolate(x, scale_factor=2, mode="nearest")
-                y = ftmaps[p-1]
-                lateral = getattr(self, 'lateral%d' % p)(y)
-                x += lateral
-            return [x]
-        else:
-            return [db3]
+        # if self.feature_upsample:
+        ftmaps = [None, redc1.squeeze(2), redc2.squeeze(2), redc3.squeeze(2)]
+        x = self.lateral4(ftmaps[-1])
+        for p in range(3, self.fpn_finest_layer - 1, -1):
+            x = F.interpolate(x, scale_factor=2, mode="nearest")
+            y = ftmaps[p-1]
+            lateral = getattr(self, 'lateral%d' % p)(y)
+            x += lateral
+        return [x]
 
     def init_weights(self, pretrained=True):
         pattern = re.compile(

@@ -8,7 +8,7 @@ dataset_transform = dict(
     DATA_AUG_POSITION = False,
     NORM_SPACING = 0.,
     SLICE_INTV = 2.0,
-    NUM_SLICES = 7,
+    NUM_SLICES = 3,
     GROUNP_ZSAPACING = False,
 )
 input_channel = dataset_transform['NUM_SLICES']

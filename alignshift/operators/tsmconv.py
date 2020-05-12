@@ -17,7 +17,7 @@ class TSMConv(_ConvNd):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
                  bias=True, padding_mode='zeros', 
-                 n_fold=8, tsm=True, inplace=True,
+                 n_fold=8, tsm=True, inplace=False,
                  shift_padding_zero=True):
 
         kernel_size = _pair_same(kernel_size)

@@ -50,8 +50,8 @@ class DefaultFormatBundle_3d(object):
         if 'gt_semantic_seg' in results:
             results['gt_semantic_seg'] = DC(
                 to_tensor(results['gt_semantic_seg'][None, ...]), stack=True)
-        if 'z_spacing' in results:
-            results['z_spacing'] = DC(to_tensor(results['z_spacing']), stack=True, pad_dims=None)
+        if 'thickness' in results:
+            results['thickness'] = DC(to_tensor(results['thickness']), stack=True, pad_dims=None)
         return results
 
     def __repr__(self):
