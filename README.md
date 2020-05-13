@@ -73,14 +73,20 @@ output_3d = net(input_3d, thickness)
 
 * Dataset
 
-  Before training, mask should be generated from bounding box and recists. [mask generation](./deeplesion/dataset/generate_mask_with_grabcut.md)
+  * Download [Deeplesion dataset](https://nihcc.box.com/v/DeepLesion)
+  * Before training, mask should be generated from bounding box and recists. [mask generation](./deeplesion/dataset/generate_mask_with_grabcut.md)
 
-* prepare mmdetection script
+* Preparing mmdetection script
 
-  Specify input ct slices in [./deeplesion/mconfigs/densenet_align.py](./deeplesion/mconfigs/densenet_align.py) through modifing NUM_SLICES in dict dataset_transform
+  * Specify input ct slices in [./deeplesion/mconfigs/densenet_align.py](./deeplesion/mconfigs/densenet_align.py) through modifing NUM_SLICES in dict dataset_transform
   
-  Specify data root in [./deeplesion/ENVIRON.py](./deeplesion/ENVIRON.py)
+  * Specify data root in [./deeplesion/ENVIRON.py](./deeplesion/ENVIRON.py)
   
+* Model weights
+
+  Our trained weights published on: 
+   * BaiDuYun: url:https://pan.baidu.com/s/1q5qYrtRWEJ2mtD2GmZzfwQ code:km6v
+   * Google Drive: 
 
 * Training
   ```bash
