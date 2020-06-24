@@ -3,7 +3,7 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 import numpy as np
 from pycocotools import mask as mutils
 import sys
-sys.path.append('/mnt/data3/alignconv/')
+# sys.path.append('add your workspace here')
 import os
 os.environ['CUDA_VISIBLE_DEVICES']='0'
 # from dataset import DeepLesionDataset
