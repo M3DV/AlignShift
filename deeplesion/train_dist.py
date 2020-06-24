@@ -2,7 +2,7 @@
 from __future__ import division
 import argparse
 import sys
-sys.path.append('/mnt/data3/alignconv/')
+#sys.path.append('add your worck space here')
 import os
 import torch
 torch.multiprocessing.set_sharing_strategy('file_system')
