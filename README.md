@@ -1,6 +1,6 @@
 # AlignShift
 
-*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([arXiv:2005.01969](https://arxiv.org/abs/2005.01969))
+*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20, early accept](https://arxiv.org/abs/2005.01969))
 
 ## Key contributions
 
@@ -86,7 +86,7 @@ output_3d = net(input_3d, thickness)
 
   Our trained weights published on: 
    * BaiDuYun: url:https://pan.baidu.com/s/1q5qYrtRWEJ2mtD2GmZzfwQ code:km6v
-   * Google Drive: 
+   * Google Drive: https://drive.google.com/drive/folders/1rQOkzqRZh6lbvt-GxnwAYUh6hoYOE1DK?usp=sharing
 
 * Training
   ```bash
