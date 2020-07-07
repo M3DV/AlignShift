@@ -72,15 +72,13 @@ class DeepLesionDatasetTSM(CustomDataset):
         # masks = masks.sum(0)>0
         slice_intv = ann['ann']['slice_intv']
         spacing = ann['ann']['spacing']
-        # if slice_intv < self.cfg.SLICE_INTV:
-        #     slice_intv = self.cfg.SLICE_INTV
         label = ann['ann']['labels']
-        # recists = ann['ann']['recists']
-        # diameters = ann['ann']['diameters']
-        # window = ann['ann']['window']
-        # gender = ann['ann']['gender']
-        # age = ann['ann']['age']
-        # z_coord = ann['ann']['z_coord']
+        recists = ann['ann']['recists']
+        diameters = ann['ann']['diameters']
+        spacing = ann['ann']['spacing']
+        gender = float(ann['ann']['gender'])
+        age = float(ann['ann']['age'])
+        z_coord = float(ann['ann']['z_coord'])
 
         im, im_scale = load_prep_img(self.img_path, image_fn, spacing, slice_intv,
                                            self.cfg, num_slice=self.slice_num, is_train=self.is_train)
@@ -90,11 +88,15 @@ class DeepLesionDatasetTSM(CustomDataset):
 
         masks = masks.transpose((2, 0, 1))
         boxes = boxes.astype(np.float32)
-        infos = {'masks': masks,
-                 'bboxes': boxes,
-                 'labels': label,
-                }
         results = dict()#img_info=ann, ann_info=infos
+        results['filename'] = image_fn
+        # results['flage'] = flage
+        infos = {'recists': recists,
+                 'diameters': diameters,
+                 'spacing': spacing,
+                 'thickness':slice_intv
+                }
+        results['infos'] = infos
         results['filename'] = image_fn
         # results['flage'] = flage
         results['img'] = im
