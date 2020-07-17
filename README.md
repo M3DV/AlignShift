@@ -86,7 +86,7 @@ output_3d = net(input_3d, thickness)
 
   Our trained weights published on: 
    * BaiDuYun:链接: https://pan.baidu.com/s/1NsCkvjZdAgi9navg3_ry3g 提取码: h2wc
-   * Google Drive: https://drive.google.com/drive/folders/1rQOkzqRZh6lbvt-GxnwAYUh6hoYOE1DK?usp=sharing
+   * Google Drive: https://drive.google.com/drive/folders/1_ApYs5vb_VzkdqK02lb861Psj-GSdznV?usp=sharing
 
 * Training
   ```bash
