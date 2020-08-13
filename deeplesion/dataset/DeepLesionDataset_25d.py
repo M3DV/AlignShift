@@ -68,10 +68,6 @@ class DeepLesionDataset25d(CustomDataset):
         label = ann['ann']['labels']
         recists = ann['ann']['recists']
         diameters = ann['ann']['diameters']
-<<<<<<< HEAD
-=======
-        spacing = ann['ann']['spacing']
->>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
         gender = float(ann['ann']['gender'])
         age = float(ann['ann']['age'])
         z_coord = float(ann['ann']['z_coord'])
@@ -92,11 +88,6 @@ class DeepLesionDataset25d(CustomDataset):
                  'spacing': spacing,
                  'thickness':slice_intv
                 }
-<<<<<<< HEAD
-=======
-        results['infos'] = infos
-        results['filename'] = image_fn
->>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
         # results['flage'] = flage
         results['img'] = im
         results['img_shape'] = im.shape
