@@ -9,7 +9,7 @@ dataset_transform = dict(
     DATA_AUG_POSITION = False,
     NORM_SPACING = 0.,
     SLICE_INTV = 2.0,
-    NUM_SLICES = 7,
+    NUM_SLICES = 3,
     GROUNP_ZSAPACING = False,
 )
 input_channel = dataset_transform['NUM_SLICES']
@@ -169,7 +169,7 @@ pre_pipeline_test=[
 ]
 train_pipeline = [
     dict(type='DefaultFormatBundle_3d'),
-    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks', 'thickness']),#, 'flage'#, 'img_info'#, 'z_spacing', , 'thickness'
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks']),#, 'flage'#, 'img_info'#, 'z_spacing', , 'thickness'
 ]
 
 test_pipeline = [
@@ -227,10 +227,10 @@ log_config = dict(
 total_epochs = 20#16
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = f'./work_dirs/densenet_3d_tsm_r1'
+work_dir = f'./work_dirs/densenet_3d_tsm3slice_r2'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]#, ('val',1)
 GPU = '0,1,2,3'
-description='tsm'
+description='tsm 3 slice'
 

@@ -114,7 +114,11 @@ def single_gpu_test(model, data_loader):
             res_dict['spacing'] = ann[i]['ann']['spacing']
             res_dict['recists'] = ann[i]['ann']['recists']
             res_dict['thickness'] = ann[i]['ann']['slice_intv']
+<<<<<<< HEAD
             # res_dict['diameter_erro'], res_dict['pred_mask'], res_dict['gt_mask_my'], res_dict['pred_mask_index'] = mask_matrics(res_dict)                
+=======
+            res_dict['diameter_erro'], res_dict['pred_mask'], res_dict['gt_mask_my'], res_dict['pred_mask_index'] = mask_matrics(res_dict)                
+>>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
             results.append(res_dict)
                 
             prog_bar.update()
@@ -140,14 +144,24 @@ def write_metrics(outputs, log_path, epoch):
         else:
             so_box.append(np.vstack(d['bboxes']))
             so_gt.append(d['gt_boxes']) 
+<<<<<<< HEAD
         # so_seg_erro.extend(d['diameter_erro'])
+=======
+        so_seg_erro.extend(d['diameter_erro'])
+>>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
     sens1 = sens_at_FP(s1_box, s1_gt, avgFP, iou_th)
     sens2 = sens_at_FP(s5_box, s5_gt, avgFP, iou_th)
     sens = sens_at_FP(s1_box+s5_box+so_box, s1_gt+s5_gt+so_gt, avgFP, iou_th)
 
+<<<<<<< HEAD
     # so_seg_erro = np.array(so_seg_erro)
     # diameter_erro = so_seg_erro[so_seg_erro>-1].mean()
     s = str(epoch)+':\t'+str(sens)+'\t'+str(sens1)+'\t'+str(sens2)+f'\t \n'#diameter_erro:{diameter_erro}\n'
+=======
+    so_seg_erro = np.array(so_seg_erro)
+    diameter_erro = so_seg_erro[so_seg_erro>-1].mean()
+    s = str(epoch)+':\t'+str(sens)+'\t'+str(sens1)+'\t'+str(sens2)+f'\t \ndiameter_erro:{diameter_erro}\n'
+>>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
     print(s)
     # with open(log_path,'a+') as f:
     #     f.write(s)
@@ -173,14 +187,22 @@ def mask_matrics(output, iou_thresh=0.5):
                 # _, cnts = cv2.findContours(l_seg, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
                 pred_mask_index.append(indx)
                 prop = regionprops(d_seg)[0]
+<<<<<<< HEAD
                 diameter = np.sqrt(hprop.major_axis_lengt**2 + prop.minor_axis_length**2)/2
+=======
+                diameter = np.sqrt(prop.major_axis_length**2 + prop.minor_axis_length**2)/2
+>>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
                 recists = output['recists'][i].reshape((4, 2))
                 l = np.linalg.norm(recists[0] - recists[1])
                 s = np.linalg.norm(recists[2] - recists[3])
                 diameter1 = np.sqrt(l**2 + s**2)/2
+<<<<<<< HEAD
 
                 erro[i] = (abs(prop.major_axis_lengt-max(l,s)) + abs(prop.minor_axis_length-min(l,s))) * output['spacing']
                 # erro[i] = np.abs(diameter1 - diameter) * output['spacing']
+=======
+                erro[i] = np.abs(diameter1 - diameter) * output['spacing']
+>>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
         except Exception as e:
             print(e)
             print(len(output['segs']), indx, i, output['bboxes'].shape, decode(output['segs'][indx]).sum())
@@ -192,7 +214,11 @@ def main(checkpoint, cfg_path=None):
         cfg_path = generate_cfg(checkpoint)
     print(cfg_path)
     model, dl = get_model(cfg_path)
+<<<<<<< HEAD
     log_path = './log/metrix_log.txt'
+=======
+    log_path = '/mnt/data3/alignconv/logs/metrix_log.txt'
+>>>>>>> 5c74414d614fed88d813bba7aa2c0fb586e78825
     load_checkpoint(model, checkpoint, map_location='cpu', strict=True)
     outputs = single_gpu_test(model, dl)
     r = write_metrics(outputs, log_path, 'N/A')
