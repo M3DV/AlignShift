@@ -66,9 +66,8 @@ class DeepLesionDatasetAlign(CustomDataset):
         slice_intv = ann['ann']['slice_intv']
         spacing = ann['ann']['spacing']
         label = ann['ann']['labels']
-        # recists = ann['ann']['recists']
-        # diameters = ann['ann']['diameters']
-        # window = ann['ann']['window']
+        recists = ann['ann']['recists']
+        diameters = ann['ann']['diameters']
         gender = float(ann['ann']['gender'])
         age = float(ann['ann']['age'])
         z_coord = float(ann['ann']['z_coord'])
@@ -81,10 +80,15 @@ class DeepLesionDatasetAlign(CustomDataset):
 
         masks = masks.transpose((2, 0, 1))
         boxes = boxes.astype(np.float32)
-        infos = dict(gender=gender,
-                        age=age,
-                        z_coord=z_coord)
-        results = dict(additional_fts=infos)#img_info=ann, ann_info=infos
+        results = dict()#img_info=ann, ann_info=infos
+        results['filename'] = image_fn
+        # results['flage'] = flage
+        infos = {'recists': recists,
+                 'diameters': diameters,
+                 'spacing': spacing,
+                 'thickness':slice_intv
+                }
+        results['infos'] = infos
 
         results['filename'] = image_fn
         # results['flage'] = flage
