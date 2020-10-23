@@ -112,5 +112,4 @@ output_3d = net(input_3d, thickness)
 
 **[WIP] More code is coming soon, stay tuned!**
 
-* [ ] Model Snapshot
 * [ ] More document
