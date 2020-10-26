@@ -19,6 +19,12 @@
   the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
 ,this directory consists of compounents used in mmdetection.
 * ``mmdet`` 
+## installation
+
+* Install [to compile operations in mmdet]
+  * git clone this repository
+  * pip install -e . 
+  
 ## Convert a 2D model into 3D with a single line of code
 
 ```python
@@ -71,9 +77,6 @@ output_3d = net(input_3d, thickness)
 
 ## How to run the experiments
 
-* Install [to compile operations in mmdet]
-  * git clone this repository
-  * pip install -e . 
 * Dataset
 
   * Download [Deeplesion dataset](https://nihcc.box.com/v/DeepLesion)
