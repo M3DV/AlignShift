@@ -71,6 +71,9 @@ output_3d = net(input_3d, thickness)
 
 ## How to run the experiments
 
+* Install [to compile operations in mmdet]
+  * git clone this repository
+  * pip install -e . 
 * Dataset
 
   * Download [Deeplesion dataset](https://nihcc.box.com/v/DeepLesion)
