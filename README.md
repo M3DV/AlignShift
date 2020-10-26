@@ -21,9 +21,8 @@
 * ``mmdet`` 
 ## installation
 
-* Install [to compile operations in mmdet]
-  * git clone this repository
-  * pip install -e . 
+ * git clone this repository
+ * pip install -e . 
   
 ## Convert a 2D model into 3D with a single line of code
 
