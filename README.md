@@ -19,7 +19,7 @@
   the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
 ,this directory consists of compounents used in mmdetection.
 * ``mmdet`` 
-## installation
+## Installation
 
  * git clone this repository
  * pip install -e . 
