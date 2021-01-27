@@ -1,6 +1,6 @@
 # AlignShift
 
-*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20, early accept](https://arxiv.org/abs/2005.01969))
+*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20, early accepted](https://arxiv.org/abs/2005.01969))
 
 ## Key contributions
 
