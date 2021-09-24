@@ -5,7 +5,6 @@ from pycocotools import mask as mutils
 import sys
 # sys.path.append('/your alignshit path')
 import os
-os.environ['CUDA_VISIBLE_DEVICES']='0'
 # from dataset import DeepLesionDataset
 import cv2
 import random
