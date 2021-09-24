@@ -173,7 +173,7 @@ def mask_matrics(output, iou_thresh=0.5):
                 # _, cnts = cv2.findContours(l_seg, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
                 pred_mask_index.append(indx)
                 prop = regionprops(d_seg)[0]
-                diameter = np.sqrt(hprop.major_axis_lengt**2 + prop.minor_axis_length**2)/2
+                diameter = np.sqrt(prop.major_axis_lengt**2 + prop.minor_axis_length**2)/2
                 recists = output['recists'][i].reshape((4, 2))
                 l = np.linalg.norm(recists[0] - recists[1])
                 s = np.linalg.norm(recists[2] - recists[3])

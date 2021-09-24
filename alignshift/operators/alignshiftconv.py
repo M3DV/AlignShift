@@ -33,8 +33,8 @@ class AlignShiftConv(_ConvNd):
         self.ref_thickness = ref_thickness
         self.shift_padding_zero = shift_padding_zero
 
-    def alignshift(self, input, fold, thickness, padding_zero=True):
-        alph = 1 - (self.ref_thickness / thickness).view(-1, 1 ,1, 1, 1).clamp_(0., 1.)
+    def alignshift(self, input, fold, ref_thickness, thickness, padding_zero=True):
+        alph = 1 - (ref_thickness / thickness).view(-1, 1 ,1, 1, 1).clamp_(0., 1.)
         out = torch.zeros_like(input)
         out[:, :fold, :-1] = input[:,  :fold, :-1] * alph +  input[:,  :fold, 1:] * (1-alph)
         out[:, fold: 2 * fold, 1:] = input[:,  fold: 2 * fold, 1:] * alph + \
@@ -49,7 +49,7 @@ class AlignShiftConv(_ConvNd):
         if inplace:
             x = inplace_alignshift(x, fold, ref_thickness, thickness, padding_zero)
         else:
-            x = self.alignshift(x, fold, thickness, padding_zero)
+            x = self.alignshift(x, fold, ref_thickness, thickness, padding_zero)
         return x
 
     def forward(self, input, thickness=None):
@@ -67,7 +67,7 @@ class AlignShiftConv(_ConvNd):
 
 class InplaceAlignShift(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input, fold, align_spacing, thickness, padding_zero=True):
+    def forward(ctx, input, fold, ref_thickness, thickness, padding_zero=True):
         '''
         @params: 
             input: BxCxDxHxW
@@ -79,7 +79,7 @@ class InplaceAlignShift(torch.autograd.Function):
         n, c, t, h, w = input.size()
         ctx.fold_ = fold
         ctx.padding_zero = padding_zero
-        alph = 1 - (align_spacing / thickness).view(-1, 1 ,1, 1, 1).clamp_(0., 1.) ##把小于align_spacing的当作align_spacing，不做插值处理 
+        alph = 1 - (ref_thickness / thickness).view(-1, 1 ,1, 1, 1).clamp_(0., 1.) ##把小于ref_thickness的当作ref_thickness，不做插值处理 
         ctx.alph_ = alph
         input.data[:, :fold, :-1] = input.data[:, :fold, :-1] * alph + input.data[:, :fold, 1:] * (1-alph)
         input.data[:, fold:2*fold, 1:] = input.data[:, fold:2*fold, 1:] * alph + \
