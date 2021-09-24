@@ -1,1 +1,1 @@
-data_root = '/mnt/data/DeepLesion/'
+data_root = '/mnt/data2/deeplesion/dataset/'
