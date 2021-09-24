@@ -1,6 +1,8 @@
 # AlignShift
 
-*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20, early accept](https://arxiv.org/abs/2005.01969))
+**NEW**: Code for our new MICCAI'21 paper "Asymmetric 3D Context Fusion for Universal Lesion Detection" will also be pushed to this repository soon.
+
+*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20, early accepted](https://arxiv.org/abs/2005.01969))
 
 ## Key contributions
 
@@ -19,6 +21,11 @@
   the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
 ,this directory consists of compounents used in mmdetection.
 * ``mmdet`` 
+## Installation
+
+ * git clone this repository
+ * pip install -e . 
+  
 ## Convert a 2D model into 3D with a single line of code
 
 ```python
@@ -109,7 +116,3 @@ output_3d = net(input_3d, thickness)
    ```bash
    ./deeplesion/eval.sh ./deeplesion/mconfig/densenet_align.py ./deeplesion/model_weights/alignshift_7slice.pth
    ```
-
-**[WIP] More code is coming soon, stay tuned!**
-
-* [ ] More document
