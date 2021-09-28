@@ -11,7 +11,7 @@ import torch.utils.model_zoo as model_zoo
 import re
 from collections import OrderedDict
 from mmdet.models.registry import BACKBONES
-from alignshift.operators.tsmconv import TSMConv
+from nn.operators.tsmconv import TSMConv
 import torch.utils.checkpoint as cp
 from mmdet.models.utils import build_conv_layer, build_norm_layer
 # mybn = nn.BatchNorm3d

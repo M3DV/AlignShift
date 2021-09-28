@@ -54,7 +54,7 @@ out = m(x, thickness)
 ## Usage of AlignShiftConv/TSMConv operators
 
 ```python
-from alignshift.operators import AlignShiftConv, TSMConv
+from nn.operators import AlignShiftConv, TSMConv
 x = torch.rand(batch_size, 3, D, H, W)
 thickness = torch.rand(batch_size, 1)
 # AlignShiftConv to process 3D volumnes
@@ -68,7 +68,7 @@ out = conv(x)
 ## Usage of native  AlignShiftConv/TSMConv models
 
 ```python
-from alignshift.models import DenseNetCustomTrunc3dAlign, DenseNetCustomTrunc3dTSM
+from nn.models import DenseNetCustomTrunc3dAlign, DenseNetCustomTrunc3dTSM
 net = DenseNetCustomTrunc3dAlign(num_classes=3)
 B, C_in, D, H, W = (1, 3, 7, 256, 256)
 input_3d = torch.rand(B, C_in, D, H, W)
