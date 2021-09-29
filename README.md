@@ -1,26 +1,23 @@
-# AlignShift
+# DeepLesion Codebase for Universal Lesion Detection
 
-**NEW**: Code for our new MICCAI'21 paper "Asymmetric 3D Context Fusion for Universal Lesion Detection" will also be pushed to this repository soon.
+This repository contains the codebase for our 2 papers A3D (MICCAI'21) and AlignShift (MICCAI'20), which achieves *state-of-the-art* performance on DeepLesion for universal lesion detection. 
 
-*AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20, early accepted](https://arxiv.org/abs/2005.01969))
+* Asymmetric 3D Context Fusion for Universal Lesion Detection ([MICCAI'21](https://arxiv.org/abs/2109.08684))
 
-## Key contributions
+* *AlignShift*: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes ([MICCAI'20](https://arxiv.org/abs/2005.01969), early accepted)
 
-* *AlignShift* aims at a **plug-and-play replacement** of standard 3D convolution for 3D medical images, which enables 2D-to-3D pretraining as [ACS Convolutions](https://github.com/M3DV/ACSConv/). It converts theoretically any 2D pretrained network into thickness-aware 3D network. 
-* *AlignShift*  bridges the performance gap between thin- and thick-slice volumes by a unified framework. Remarkably, the *AlignShift*-converted networks behave like 3D for the thin-slice, nevertheless degenerate to 2D for the thick-slice adaptively.
-* Without whistles and bells, we outperform previous state of the art by considerable margins on large-scale DeepLesion benchmark for universal lesion detection.
 
 ## Code structure
 
-* ``alignshift``
-  the core implementation of AlignShift convolution and TSM convolution, including the operators, models, and 2D-to-3D/AlignShift/TSM model converters. 
-  * ``operators``: include AlignShiftConv, TSMConv, A3DConv.
+* ``nn``
+  The core implementation of AlignShift convolution and TSM convolution, including the operators, models, and 2D-to-3D/AlignShift/TSM model converters. 
+  * ``operators``: A3DConv, AlignShiftConv, TSMConv.
   * ``converters.py``: include converters which convert 2D models to 3DConv/AlignShiftConv/TSMConv/A3DConv counterparts.
   * ``models``: Native AlignShift/TSM/A3DConv models. 
 * ``deeplesion`` 
-  the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
-,this directory consists of compounents used in mmdetection.
-* ``mmdet`` 
+  The experiment code is based on [mmdetection](https://github.com/open-mmlab/mmdetection), this directory consists of compounents used in mmdetection.
+* ``mmdet``: a duplication of [mmdetection](https://github.com/open-mmlab/mmdetection) with our new models registered.
+
 ## Installation
 
  * git clone this repository
@@ -83,7 +80,7 @@ output_3d = net(input_3d, thickness)
 
 * Dataset
 
-  * Download [Deeplesion dataset](https://nihcc.box.com/v/DeepLesion)
+  * Download [DeepLesion dataset](https://nihcc.box.com/v/DeepLesion)
   * Before training, mask should be generated from bounding box and recists. [mask generation](./deeplesion/dataset/generate_mask_with_grabcut.md)
 
 * Preparing mmdetection script
@@ -93,10 +90,11 @@ output_3d = net(input_3d, thickness)
   * Specify data root in [./deeplesion/ENVIRON.py](./deeplesion/ENVIRON.py)
   
 * Model weights
+  Our trained weights available on: 
+   * [Google Drive](https://drive.google.com/drive/folders/1_ApYs5vb_VzkdqK02lb861Psj-GSdznV?usp=sharing)
+   * [百度网盘](https://pan.baidu.com/s/1NsCkvjZdAgi9navg3_ry3g) (h2wc)
+   * [ ] [TODO] A3D models are coming soon!
 
-  Our trained weights published on: 
-   * BaiDuYun:链接: https://pan.baidu.com/s/1NsCkvjZdAgi9navg3_ry3g 提取码: h2wc
-   * Google Drive: https://drive.google.com/drive/folders/1_ApYs5vb_VzkdqK02lb861Psj-GSdznV?usp=sharing
 
 * Training
   ```bash
@@ -124,3 +122,30 @@ output_3d = net(input_3d, thickness)
    ```bash
    ./deeplesion/eval.sh ./deeplesion/mconfig/densenet_align.py ./deeplesion/model_weights/alignshift_7slice.pth
    ```
+
+## Citation
+If you find this project useful, please cite the following papers:
+
+    Jiancheng Yang, Yi He, Kaiming Kuang, Zudi Lin, Hanspeter Pfister, Bingbing Ni. "Asymmetric 3D Context Fusion for Universal Lesion Detection". International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI), 2021.
+    
+    Jiancheng Yang, Yi He, Xiaoyang Huang, Jingwei Xu, Xiaodan Ye, Guangyu Tao, Bingbing Ni. "AlignShift: Bridging the Gap of Imaging Thickness in 3D Anisotropic Volumes". International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI), 2020.
+    
+or using bibtex:
+
+    @inproceedings{yang2021asymmetric,
+      title={Asymmetric 3D Context Fusion for Universal Lesion Detection},
+      author={Yang, Jiancheng and He, Yi and Kuang, Kaiming and Lin, Zudi and Pfister, Hanspeter and Ni, Bingbing},
+      booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI)},
+      pages={571--580},
+      year={2021},
+      organization={Springer}
+    }
+
+    @inproceedings{yang2020alignshift,
+      title={AlignShift: bridging the gap of imaging thickness in 3D anisotropic volumes},
+      author={Yang, Jiancheng and He, Yi and Huang, Xiaoyang and Xu, Jingwei and Ye, Xiaodan and Tao, Guangyu and Ni, Bingbing},
+      booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI)},
+      pages={562--572},
+      year={2020},
+      organization={Springer}
+    }
