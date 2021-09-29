@@ -10,18 +10,14 @@ from torch.nn.parameter import Parameter
 class A3DConv(_ConvNd):
     '''
     Args: 
-        n_fold (int): Divisor of channels to shift.
-        alignshift(bool): if apply alignshift operation before conv
+        dimension (int): number of dimensions to shift.
         inplace (bool): if Enable inplace operation.
-        ref_thickness (float): Reference z axis spacing Default: 0.2mm.
-        shift_padding_zero(bool): f padding zeros to side fold before shift channels 
+        enable_shift(bool): if enable shift 
     '''
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
                  bias=True, padding_mode='zeros', 
-                 dimension=3,
-                 enable_shift=True, inplace=False,
-                 shift_padding_zero=False):
+                 dimension=3, enable_shift=True, inplace=False):
 
         kernel_size = _pair_same(kernel_size)
         stride = as_triple(stride)
@@ -33,8 +29,6 @@ class A3DConv(_ConvNd):
 
         self.enable_shift = enable_shift
         self.inplace = inplace
-        self.shift_padding_zero = shift_padding_zero
-        # if self.enable_shift:
         self._init_adaptive_weights(in_channels, dimension)
 
     def _init_adaptive_weights(self, in_channels, dimension):

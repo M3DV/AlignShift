@@ -1,3 +1,3 @@
 from .alignshiftconv import AlignShiftConv
 from .tsmconv import TSMConv
-from .a3d import A3DConv
+from .a3dconv import A3DConv

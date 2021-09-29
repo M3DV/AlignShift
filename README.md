@@ -14,9 +14,9 @@
 
 * ``alignshift``
   the core implementation of AlignShift convolution and TSM convolution, including the operators, models, and 2D-to-3D/AlignShift/TSM model converters. 
-  * ``operators``: include AlignShiftConv, TSMConv.
-  * ``converters.py``: include converters which convert 2D models to 3dConv/AlignShiftConv/TSMConv counterparts.
-  * ``models``: Native AlignShift/TSM models. 
+  * ``operators``: include AlignShiftConv, TSMConv, A3DConv.
+  * ``converters.py``: include converters which convert 2D models to 3DConv/AlignShiftConv/TSMConv/A3DConv counterparts.
+  * ``models``: Native AlignShift/TSM/A3DConv models. 
 * ``deeplesion`` 
   the experiment code is base on [mmdetection](https://github.com/open-mmlab/mmdetection)
 ,this directory consists of compounents used in mmdetection.
@@ -51,10 +51,10 @@ thickness = torch.rand(batch_size, 1)
 out = m(x, thickness)
 ```
 
-## Usage of AlignShiftConv/TSMConv operators
+## Usage of AlignShiftConv/TSMConv/A3DConv operators
 
 ```python
-from nn.operators import AlignShiftConv, TSMConv
+from nn.operators import AlignShiftConv, TSMConv, A3DConv
 x = torch.rand(batch_size, 3, D, H, W)
 thickness = torch.rand(batch_size, 1)
 # AlignShiftConv to process 3D volumnes
@@ -62,6 +62,9 @@ conv = AlignShiftConv(in_channels=3, out_channels=10, kernel_size=3, padding=1, 
 out = conv(x, thickness)
 # TSMConv to process 3D volumnes
 conv = TSMConv(in_channels=3, out_channels=10, kernel_size=3, padding=1, n_fold=8, tsm=True)
+out = conv(x)
+# A3DConv to process 3D volumnes
+conv = A3DConv(in_channels=3, out_channels=10, kernel_size=3, padding=1, dimension=3)
 out = conv(x)
 ```
 
@@ -109,6 +112,11 @@ output_3d = net(input_3d, thickness)
   ```bash
   ./deeplesion/train_dist.sh ./deeplesion/mconfig/densenet_tsm.py 2
   ```
+    * Train A3DConv models 
+  ```bash
+  ./deeplesion/train_dist.sh ./deeplesion/mconfig/densenet_a3d.py 2
+  ```
+
  * Evaluation 
    ```bash
    ./deeplesion/eval.sh ${mmdetection script} ${checkpoint path}
