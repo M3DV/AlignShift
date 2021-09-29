@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 #my setting
+*.so
 .idea
 *pycache*
 *.pyc
@@ -18,8 +18,6 @@ to2dweights.py
 epoch_18.pth
 ttepoch_18.pth
 *.pth
-=======
->>>>>>> 3ff8574077823c9bfc120ac9cd9dab9396a50bcc
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
