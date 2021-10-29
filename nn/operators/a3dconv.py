@@ -40,21 +40,21 @@ class A3DConv(_ConvNd):
             self.adaptive_align_weights.data = aw + noise
         # self.adaptive_align_weights.requires_grad = True
 
-    def _adaptive_shift(self, input, padding_zero=True):
+    def _adaptive_shift(self, input):
         out = torch.einsum('bcdhw,dkc->bckhw', [input, self.adaptive_align_weights])
         return out
 
-    def adaptive_shift(self, x, padding_zero, inplace):
+    def adaptive_shift(self, x, inplace):
         if inplace:
             raise NotImplementedError
         else:
-            x = self._adaptive_shift(x, padding_zero)
+            x = self._adaptive_shift(x)
         return x
 
     def forward(self, input):
         if self.enable_shift:
             _, c, _, _, _ = input.size()
-            input = self.adaptive_shift(input, self.shift_padding_zero, self.inplace)
+            input = self.adaptive_shift(input, self.inplace)
         return F.conv3d(input, self.weight.unsqueeze(2), self.bias, self.stride,
                         self.padding, self.dilation, self.groups) 
 
