@@ -22,7 +22,13 @@ This repository contains the codebase for our 2 papers A3D (MICCAI'21) and Align
 
  * git clone this repository
  * pip install -e . 
-  
+ 
+The code requires only common Python environments for machine learning. Basically, it was tested with
+Python 3 (>=3.6)
+PyTorch==1.3.1
+numpy==1.18.5, pandas==0.25.3, scikit-learn==0.22.2, Pillow==8.0.1, fire, scikit-image
+Higher (or lower) versions should also work (perhaps with minor modifications).
+
 ## Convert a 2D model into 3D with a single line of code
 
 ```python
